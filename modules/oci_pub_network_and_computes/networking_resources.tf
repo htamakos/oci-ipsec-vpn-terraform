@@ -146,6 +146,7 @@ resource "oci_core_security_list" "pub_sl" {
 
 ### Subnets
 resource "oci_core_subnet" "pub_subnet" {
+  count             = "${var.env == "cloud" ? 0 : 1}"
   provider          = "oci.target"
   cidr_block        = "${var.pub_subnet_cidr}"
   compartment_id    = "${var.compartment_id}"
@@ -168,7 +169,7 @@ resource "oci_core_subnet" "pub_subnet_with_drg" {
   vcn_id            = "${oci_core_vcn.vcn.id}"
 
   display_name = "${var.name_prefix}_pub_subnet"
-  dns_label    = "pri"
+  dns_label    = "pub"
 
   prohibit_public_ip_on_vnic = false
   route_table_id             = "${oci_core_route_table.pub_rt_with_drg.id}"
