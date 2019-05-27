@@ -20,7 +20,6 @@ variable "public_cidr_block" {
 
 variable "vcn_cidr_block" {}
 variable "pub_subnet_cidr" {}
-variable "pri_subnet_cidr" {}
 
 variable "onp_subnet_cidr" {
   default = ""
@@ -49,8 +48,3 @@ variable "instance_image_id" {
 }
 
 variable "pub_instance_private_ip" {}
-variable "pri_instance_private_ip" {}
-
-variable "pri_instance_private_ip2" {
-  default = ""
-}

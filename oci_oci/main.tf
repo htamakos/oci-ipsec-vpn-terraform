@@ -1,5 +1,5 @@
 module "oci_onp" {
-  source                  = "../modules/oci_pubpri_network_and_computes"
+  source                  = "../modules/oci_pub_network_and_computes"
   tenancy_ocid            = "${var.tenancy_ocid}"
   user_ocid               = "${var.user_ocid}"
   fingerprint             = "${var.fingerprint}"
@@ -10,16 +10,13 @@ module "oci_onp" {
   ssh_private_key         = "${var.ssh_private_key}"
   vcn_cidr_block          = "10.0.0.0/16"
   pub_subnet_cidr         = "10.0.1.0/24"
-  pri_subnet_cidr         = "10.0.2.0/24"
   pub_instance_private_ip = "10.0.1.11"
-  pri_instance_private_ip = "10.0.2.11"
-  pri_instance_private_ip2 = "10.0.1.12"
   name_prefix             = "${var.name_prefix}_${local.onp_env}"
   env                     = "${local.onp_env}"
 }
 
 module "oci_cloud" {
-  source                  = "../modules/oci_pubpri_network_and_computes"
+  source                  = "../modules/oci_pub_network_and_computes"
   tenancy_ocid            = "${var.tenancy_ocid}"
   user_ocid               = "${var.user_ocid}"
   fingerprint             = "${var.fingerprint}"
@@ -30,10 +27,8 @@ module "oci_cloud" {
   ssh_private_key         = "${var.ssh_private_key}"
   vcn_cidr_block          = "172.168.0.0/16"
   pub_subnet_cidr         = "172.168.1.0/24"
-  pri_subnet_cidr         = "172.168.2.0/24"
   onp_subnet_cidr         = "10.0.0.0/16"
   pub_instance_private_ip = "172.168.1.11"
-  pri_instance_private_ip = "172.168.2.11"
   cpe_ip_address          = "${module.oci_onp.pub_instance_pub_ip}"
   name_prefix             = "${var.name_prefix}_${local.cloud_env}"
   env                     = "${local.cloud_env}"

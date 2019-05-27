@@ -13,7 +13,7 @@ data "oci_core_images" "images" {
 
 data "oci_core_instance" "pub_instance" {
   provider    = "oci.target"
-  instance_id = "${oci_core_instance.pub_instance.id}"
+  instance_id = "${var.env == "onp" ? join(" ", oci_core_instance.pub_instance.*.id) : join(" ", oci_core_instance.pub_instance_with_drg.*.id)}"
 }
 
 # Common
