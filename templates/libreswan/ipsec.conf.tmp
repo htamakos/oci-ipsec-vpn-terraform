@@ -1,0 +1,25 @@
+conn oracle-tunnel-1
+  left=${onp_pub_instance_private_ip}
+  leftid=${onp_pub_instance_pub_ip}
+  right=${ipsec_connections_ip1}
+  authby=secret
+  leftsubnet=0.0.0.0/0
+  rightsubnet=0.0.0.0/0
+  auto=start
+  mark=10/0xffffffff
+  vti-interface=vti01
+  vti-routing=no
+  encapsulation=yes
+conn oracle-tunnel-2
+  left=${onp_pub_instance_private_ip}
+  leftid=${onp_pub_instance_pub_ip}
+  right=${ipsec_connections_ip2}
+  authby=secret
+  leftsubnet=0.0.0.0/0
+  rightsubnet=0.0.0.0/0
+  auto=start
+  mark=15/0xffffffff
+  vti-interface=vti02
+  vti-routing=no
+  encapsulation=yes
+

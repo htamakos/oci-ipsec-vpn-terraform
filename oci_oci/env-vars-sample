@@ -1,0 +1,16 @@
+# This is Sample env-vars File.
+### Authentication details
+export TF_VAR_tenancy_ocid="ocid1.xxxxxxxxxxxxxxxxxxxxxxxxxx"
+export TF_VAR_user_ocid="ocid1.user.oc1..xxxxxxxxxxxxxxxxxxx"
+export TF_VAR_fingerprint="xx:xx:xx:xx:xx:xx:xx:xx"
+export TF_VAR_private_key_path="~/.oci/oci_api_key.pem"
+
+### Region
+export TF_VAR_region_home="us-ashburn-1"
+export TF_VAR_region_cloud="ap-tokyo-1"
+export TF_VAR_region_onp="us-ashburn-1"
+
+### Public/private keys used on the instance
+export TF_VAR_ssh_public_key=$(cat ~/.ssh/id_rsa.pub)
+export TF_VAR_ssh_private_key=$(cat ~/.ssh/id_rsa)
+
