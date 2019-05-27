@@ -57,6 +57,23 @@ resource "oci_core_instance" "pri_instance" {
   preserve_boot_volume = false
 }
 
+resource "oci_core_vnic_attachment" "test_vnic_attachment" {
+  count    = "${var.env == "cloud" ? 0 : 1}"
+  provider = "oci.target"
+
+  create_vnic_details {
+    subnet_id = "${oci_core_subnet.pub_subnet.id}"
+
+    assign_public_ip = false
+    hostname_label   = "${var.env}-pri-instance2"
+    private_ip       = "${var.pri_instance_private_ip2}"
+  }
+
+  instance_id = "${oci_core_instance.pri_instance.id}"
+
+  display_name = "${var.name_prefix}_pri_second_nic"
+}
+
 resource "oci_core_instance" "pri_instance_with_drg" {
   count               = "${var.env == "cloud" ? 1 : 0}"
   provider            = "oci.target"

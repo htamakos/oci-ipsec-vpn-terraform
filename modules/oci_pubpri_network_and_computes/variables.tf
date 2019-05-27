@@ -50,3 +50,7 @@ variable "instance_image_id" {
 
 variable "pub_instance_private_ip" {}
 variable "pri_instance_private_ip" {}
+
+variable "pri_instance_private_ip2" {
+  default = ""
+}
