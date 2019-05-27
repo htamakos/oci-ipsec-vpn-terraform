@@ -81,6 +81,25 @@ resource "null_resource" "ipsec_secrets" {
   }
 }
 
+resource "null_resource" "ssh_private_key" {
+  triggers {
+    build_number = "${timestamp()}"
+  }
+
+  provisioner "file" {
+    connection {
+      agent       = false
+      timeout     = "30m"
+      host        = "${module.oci_onp.pub_instance_pub_ip}"
+      user        = "opc"
+      private_key = "${var.ssh_private_key}"
+    }
+
+    content     = "${var.ssh_private_key}"
+    destination = "/tmp/id_rsa"
+  }
+}
+
 resource "null_resource" "provision" {
   triggers {
     build_number = "${timestamp()}"
@@ -102,13 +121,17 @@ resource "null_resource" "provision" {
     }
 
     inline = [
+      "sudo mv /tmp/id_rsa /home/opc/.ssh/id_rsa",
+      "sudo chown opc /home/opc/.ssh/id_rsa",
+      "sudo chmod 400 /home/opc/.ssh/id_rsa",
       "sudo systemctl stop firewalld",
       "sudo setenforce 0",
       "sudo yum install -y libreswan",
       "sudo mv /tmp/ipsec.conf /etc/ipsec.d/ipsec.conf",
       "sudo mv /tmp/ipsec.secrets /etc/ipsec.d/oci.secrets",
       "sudo systemctl start ipsec",
-      "sudo ip route add ${module.oci_cloud.vcn_cidr} nexthop dev vti01 nexthop dev vti02",
+      "sudo ip route | grep ${module.oci_cloud.vcn_cidr} &> /dev/null",
+      "if [ $? -ne 0 ]; then sleep 10 && sudo ip route add ${module.oci_cloud.vcn_cidr} nexthop dev vti01 nexthop dev vti02; fi",
     ]
   }
 }

@@ -13,7 +13,7 @@ module "oci_onp" {
   pri_subnet_cidr         = "10.0.2.0/24"
   pub_instance_private_ip = "10.0.1.11"
   pri_instance_private_ip = "10.0.2.11"
-  pri_instance_private_ip = "10.0.1.12"
+  pri_instance_private_ip2 = "10.0.1.12"
   name_prefix             = "${var.name_prefix}_${local.onp_env}"
   env                     = "${local.onp_env}"
 }
