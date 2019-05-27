@@ -108,8 +108,7 @@ resource "null_resource" "provision" {
       "sudo mv /tmp/ipsec.conf /etc/ipsec.d/ipsec.conf",
       "sudo mv /tmp/ipsec.secrets /etc/ipsec.d/oci.secrets",
       "sudo systemctl start ipsec",
+      "sudo ip route add ${module.oci_cloud.vcn_cidr} nexthop dev vti01 nexthop dev vti02",
     ]
-
-    #"sudo ip route add ${module.oci_cloud.vcn_cidr} nexthop dev vti01 nexthop dev vti02"
   }
 }
