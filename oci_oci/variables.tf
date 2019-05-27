@@ -18,6 +18,6 @@ variable "public_cidr_block" {
 }
 
 locals {
-  onp_env = "onp"
+  onp_env   = "onp"
   cloud_env = "cloud"
 }
