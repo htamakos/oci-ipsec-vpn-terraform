@@ -140,6 +140,12 @@ resource "oci_core_security_list" "pub_sl" {
     source   = "${var.public_cidr_block}"
   }
 
+  ## ESP
+  ingress_security_rules {
+    protocol = 50
+    source   = "${var.public_cidr_block}"
+  }
+
   vcn_id       = "${oci_core_vcn.vcn.id}"
   display_name = "${var.name_prefix}_pub_sl"
 }
