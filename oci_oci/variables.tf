@@ -21,3 +21,28 @@ locals {
   onp_env   = "onp"
   cloud_env = "cloud"
 }
+
+# Networking
+variables "onp_vcn_cidr_block" {
+  default = "10.0.0.0/16"
+}
+
+variable "onp_pub_subnet_cidr" {
+  default = "10.0.1.0/24"
+}
+
+variable "onp_pub_instance_pri_ip" {
+  default = "10.0.1.11"
+}
+
+variables "cloud_vcn_cidr_block" {
+  default = "172.168.0.0/16"
+}
+
+variable "cloud_pub_subnet_cidr" {
+  default = "172.168.1.0/24"
+}
+
+variable "cloud_pub_instance_pri_ip" {
+  default = "172.168.1.11"
+}

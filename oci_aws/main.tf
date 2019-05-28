@@ -4,10 +4,10 @@ module "aws_onp" {
   aws_secret_key          = "${var.aws_secret_key}"
   region                  = "${var.region_onp}"
   ssh_public_key          = "${var.ssh_public_key}"
-  vpc_cidr_block          = "10.0.0.0/16"
-  pub_subnet_cidr         = "10.0.1.0/24"
-  pub_instance_private_ip = "10.0.1.11"
-  cloud_subnet_cidr       = "172.168.0.0/16"
+  vpc_cidr_block          = "${var.onp_vpc_cidr_block}"
+  pub_subnet_cidr         = "${var.onp_pub_subnet_cidr}"
+  pub_instance_private_ip = "${var.onp_pub_instance_pri_ip}"
+  cloud_subnet_cidr       = "${var.cloud_vcn_cidr_block}"
   name_prefix             = "${var.name_prefix}_${local.onp_env}"
   env                     = "${local.onp_env}"
 }
@@ -22,10 +22,10 @@ module "oci_cloud" {
   compartment_id          = "${oci_identity_compartment.compartment.id}"
   ssh_public_key          = "${var.ssh_public_key}"
   ssh_private_key         = "${var.ssh_private_key}"
-  vcn_cidr_block          = "172.168.0.0/16"
-  pub_subnet_cidr         = "172.168.1.0/24"
-  onp_subnet_cidr         = "10.0.0.0/16"
-  pub_instance_private_ip = "172.168.1.11"
+  vcn_cidr_block          = "${var.cloud_vcn_cidr_block}"
+  pub_subnet_cidr         = "${var.cloud_pub_subnet_cidr}"
+  pub_instance_private_ip = "${var.cloud_pub_instance_pri_ip}"
+  onp_subnet_cidr         = "${var.onp_vpc_cidr_block}"
   cpe_ip_address          = "${module.aws_onp.pub_instance_pub_ip}"
   name_prefix             = "${var.name_prefix}_${local.cloud_env}"
   env                     = "${local.cloud_env}"
@@ -42,16 +42,30 @@ module "common" {
   cloud_vcn_cidr          = "${module.oci_cloud.vcn_cidr}"
 }
 
+## Provider
+provider "oci" {
+  alias            = "home"
+  tenancy_ocid     = "${var.tenancy_ocid}"
+  user_ocid        = "${var.user_ocid}"
+  fingerprint      = "${var.fingerprint}"
+  private_key_path = "${var.private_key_path}"
+  region           = "${var.region_home}"
+}
+
+provider "oci" {
+  tenancy_ocid     = "${var.tenancy_ocid}"
+  user_ocid        = "${var.user_ocid}"
+  fingerprint      = "${var.fingerprint}"
+  private_key_path = "${var.private_key_path}"
+  region           = "${var.region_cloud}"
+}
+
 ## Data Sources
 data "oci_core_ipsec_connection_tunnels" "ipsec_cons" {
   ipsec_id = "${module.oci_cloud.ipsec_id}"
 }
 
 ## Outputs
-output "ADs" {
-  value = "${module.oci_cloud.ADs}"
-}
-
 output "instance_ips" {
   value = "${map(
     "onp_pub_instance_ip", module.aws_onp.pub_instance_pub_ip,
