@@ -10,7 +10,7 @@ module "oci_onp" {
   ssh_private_key         = "${var.ssh_private_key}"
   vcn_cidr_block          = "${var.onp_vcn_cidr_block}"
   pub_subnet_cidr         = "${var.onp_pub_subnet_cidr}"
-  pub_instance_private_ip = "${var.pub_instance_pri_ip}"
+  pub_instance_private_ip = "${var.onp_pub_instance_pri_ip}"
   name_prefix             = "${var.name_prefix}_${local.onp_env}"
   env                     = "${local.onp_env}"
 }

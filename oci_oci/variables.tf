@@ -23,7 +23,7 @@ locals {
 }
 
 # Networking
-variables "onp_vcn_cidr_block" {
+variable "onp_vcn_cidr_block" {
   default = "10.0.0.0/16"
 }
 
@@ -35,7 +35,7 @@ variable "onp_pub_instance_pri_ip" {
   default = "10.0.1.11"
 }
 
-variables "cloud_vcn_cidr_block" {
+variable "cloud_vcn_cidr_block" {
   default = "172.168.0.0/16"
 }
 
