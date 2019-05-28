@@ -38,6 +38,11 @@ resource "aws_route_table" "pub_rt" {
     gateway_id = "${aws_internet_gateway.ig.id}"
   }
 
+  route {
+    cidr_block  = "${var.cloud_subnet_cidr}"
+    instance_id = "${aws_instance.pub_instance.id}"
+  }
+
   tags {
     Name = "${var.name_prefix}_pub_rt"
   }
@@ -53,10 +58,10 @@ resource "aws_security_group" "sg" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   egress {
-    protocol   = -1 
+    protocol    = -1
     cidr_blocks = ["${var.public_cidr_block}"]
-    from_port  = 0 
-    to_port    = 0 
+    from_port   = 0
+    to_port     = 0
   }
 
   # SSH
@@ -168,14 +173,13 @@ resource "aws_network_acl" "main" {
   }
 
   egress {
-    protocol   = -1 
+    protocol   = -1
     rule_no    = 700
     action     = "allow"
     cidr_block = "${var.public_cidr_block}"
     from_port  = 0
-    to_port    = 0 
+    to_port    = 0
   }
-
 
   tags = {
     Name = "${var.name_prefix}_network_acl"

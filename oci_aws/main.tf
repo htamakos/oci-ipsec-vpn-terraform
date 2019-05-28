@@ -7,6 +7,7 @@ module "aws_onp" {
   vpc_cidr_block          = "10.0.0.0/16"
   pub_subnet_cidr         = "10.0.1.0/24"
   pub_instance_private_ip = "10.0.1.11"
+  cloud_subnet_cidr       = "172.168.0.0/16"
   name_prefix             = "${var.name_prefix}_${local.onp_env}"
   env                     = "${local.onp_env}"
 }
@@ -28,6 +29,17 @@ module "oci_cloud" {
   cpe_ip_address          = "${module.aws_onp.pub_instance_pub_ip}"
   name_prefix             = "${var.name_prefix}_${local.cloud_env}"
   env                     = "${local.cloud_env}"
+}
+
+module "common" {
+  source                  = "../modules/common"
+  onp_pub_instance_pri_ip = "${module.aws_onp.pub_instance_pri_ip}"
+  onp_pub_instance_pub_ip = "${module.aws_onp.pub_instance_pub_ip}"
+  ipsec_connections_ip1   = "${data.oci_core_ipsec_connection_tunnels.ipsec_cons.ip_sec_connection_tunnels.0.vpn_ip}"
+  ipsec_connections_ip2   = "${data.oci_core_ipsec_connection_tunnels.ipsec_cons.ip_sec_connection_tunnels.1.vpn_ip}"
+  ssh_private_key         = "${var.ssh_private_key}"
+  ssh_user                = "ec2-user"
+  cloud_vcn_cidr          = "${module.oci_cloud.vcn_cidr}"
 }
 
 ## Data Sources
@@ -53,4 +65,3 @@ output "ipsec_id" {
     "ipsec_tunnel_2", data.oci_core_ipsec_connection_tunnels.ipsec_cons.ip_sec_connection_tunnels.1.vpn_ip
   )}"
 }
-

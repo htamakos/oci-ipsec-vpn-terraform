@@ -5,4 +5,3 @@ resource "oci_identity_compartment" "compartment" {
   description    = "ocs compartment"
   name           = "ocs_vpn_ipsec"
 }
-

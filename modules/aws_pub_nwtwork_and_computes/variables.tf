@@ -13,14 +13,17 @@ variable "public_cidr_block" {
 
 variable "vpc_cidr_block" {}
 variable "pub_subnet_cidr" {}
+variable "cloud_subnet_cidr" {}
 
 # Compute
 variable "ssh_public_key" {}
+
 variable "pub_instance_private_ip" {}
+
 variable "ami" {
   default = "ami-00d101850e971728d"
 }
+
 variable "instance_type" {
   default = "t2.micro"
 }
-

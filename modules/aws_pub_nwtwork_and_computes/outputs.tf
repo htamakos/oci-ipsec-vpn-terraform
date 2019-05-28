@@ -9,4 +9,3 @@ output "pub_instance_pri_ip" {
 output "vcn_cidr" {
   value = "${data.aws_vpc.vpc.cidr_block}"
 }
-

@@ -1,26 +1,26 @@
 data "template_file" "sysctl" {
-  template = "${file("../templates/libreswan/sysctl.conf.tmp")}"
+  template = "${file("${path.module}/../../templates/libreswan/sysctl.conf.tmp")}"
 }
 
 data "template_file" "ipsec_conf" {
-  template = "${file("../templates/libreswan/ipsec.conf.tmp")}"
+  template = "${file("${path.module}/../../templates/libreswan/ipsec.conf.tmp")}"
 
   vars = {
-    onp_pub_instance_private_ip = "${module.aws_onp.pub_instance_pri_ip}"
-    onp_pub_instance_pub_ip     = "${module.aws_onp.pub_instance_pub_ip}"
-    ipsec_connections_ip1       = "${data.oci_core_ipsec_connection_tunnels.ipsec_cons.ip_sec_connection_tunnels.0.vpn_ip}"
-    ipsec_connections_ip2       = "${data.oci_core_ipsec_connection_tunnels.ipsec_cons.ip_sec_connection_tunnels.1.vpn_ip}"
+    onp_pub_instance_private_ip = "${var.onp_pub_instance_pri_ip}"
+    onp_pub_instance_pub_ip     = "${var.onp_pub_instance_pub_ip}"
+    ipsec_connections_ip1       = "${var.ipsec_connections_ip1}"
+    ipsec_connections_ip2       = "${var.ipsec_connections_ip2}"
   }
 }
 
 data "template_file" "ipsec_secrets" {
-  template = "${file("../templates/libreswan/ipsec.secrets.tmp")}"
+  template = "${file("${path.module}/../../templates/libreswan/ipsec.secrets.tmp")}"
 
   vars = {
-    onp_pub_instance_pub_ip = "${module.aws_onp.pub_instance_pub_ip}"
-    ipsec_connections_ip1   = "${data.oci_core_ipsec_connection_tunnels.ipsec_cons.ip_sec_connection_tunnels.0.vpn_ip}"
-    ipsec_connections_ip2   = "${data.oci_core_ipsec_connection_tunnels.ipsec_cons.ip_sec_connection_tunnels.1.vpn_ip}"
-    ipsec_shared_secrets    = "oracle"
+    onp_pub_instance_pub_ip = "${var.onp_pub_instance_pub_ip}"
+    ipsec_connections_ip1   = "${var.ipsec_connections_ip1}"
+    ipsec_connections_ip2   = "${var.ipsec_connections_ip2}"
+    ipsec_shared_secrets    = "${var.ipsec_shared_secrets}"
   }
 }
 
@@ -33,8 +33,8 @@ resource "null_resource" "sysctl" {
     connection {
       agent       = false
       timeout     = "30m"
-      host        = "${module.aws_onp.pub_instance_pub_ip}"
-      user        = "opc"
+      host        = "${var.onp_pub_instance_pub_ip}"
+      user        = "${var.ssh_user}"
       private_key = "${var.ssh_private_key}"
     }
 
@@ -52,8 +52,8 @@ resource "null_resource" "ipsec_conf" {
     connection {
       agent       = false
       timeout     = "30m"
-      host        = "${module.aws_onp.pub_instance_pub_ip}"
-      user        = "opc"
+      host        = "${var.onp_pub_instance_pub_ip}"
+      user        = "${var.ssh_user}"
       private_key = "${var.ssh_private_key}"
     }
 
@@ -71,8 +71,8 @@ resource "null_resource" "ipsec_secrets" {
     connection {
       agent       = false
       timeout     = "30m"
-      host        = "${module.aws_onp.pub_instance_pub_ip}"
-      user        = "opc"
+      host        = "${var.onp_pub_instance_pub_ip}"
+      user        = "${var.ssh_user}"
       private_key = "${var.ssh_private_key}"
     }
 
@@ -90,8 +90,8 @@ resource "null_resource" "ssh_private_key" {
     connection {
       agent       = false
       timeout     = "30m"
-      host        = "${module.aws_onp.pub_instance_pub_ip}"
-      user        = "opc"
+      host        = "${var.onp_pub_instance_pub_ip}"
+      user        = "${var.ssh_user}"
       private_key = "${var.ssh_private_key}"
     }
 
@@ -115,24 +115,30 @@ resource "null_resource" "provision" {
     connection {
       agent       = false
       timeout     = "30m"
-      host        = "${module.aws_onp.pub_instance_pub_ip}"
-      user        = "opc"
+      host        = "${var.onp_pub_instance_pub_ip}"
+      user        = "${var.ssh_user}"
       private_key = "${var.ssh_private_key}"
     }
 
     inline = [
-      "sudo mv /tmp/id_rsa /home/opc/.ssh/id_rsa",
-      "sudo chown opc /home/opc/.ssh/id_rsa",
-      "sudo chmod 400 /home/opc/.ssh/id_rsa",
+      "sudo mv /tmp/id_rsa /home/${var.ssh_user}/.ssh/id_rsa",
+      "sudo chown ${var.ssh_user} /home/${var.ssh_user}/.ssh/id_rsa",
+      "sudo chmod 400 /home/${var.ssh_user}/.ssh/id_rsa",
       "sudo systemctl stop firewalld",
       "sudo setenforce 0",
       "sudo yum install -y libreswan",
       "sudo mv /tmp/ipsec.conf /etc/ipsec.d/ipsec.conf",
       "sudo mv /tmp/ipsec.secrets /etc/ipsec.d/oci.secrets",
       "sudo systemctl start ipsec",
-      "sudo ip route | grep ${module.oci_cloud.vcn_cidr} &> /dev/null",
-      "if [ $? -ne 0 ]; then sleep 10 && sudo ip route add ${module.oci_cloud.vcn_cidr} nexthop dev vti01 nexthop dev vti02; fi",
+      "sudo ip route | grep ${var.cloud_vcn_cidr} &> /dev/null",
+      "route_check=$?",
+      "sudo ip link show | grep vti01",
+      "vti01_check=$?",
+      "if [ $vti01_check -eq 0 ]; then vti01_str='nexthop dev vti01'; else vti01_str=''; fi",
+      "sudo ip link show | grep vti02",
+      "vti02_check=$?",
+      "if [ $vti02_check -eq 0 ]; then vti02_str='nexthop dev vti02'; else vti02_str=''; fi",
+      "if [ $route_check -ne 0 ] && [ $vti01_check -eq 0 -o $vti02_check -eq 0 ]; then sleep 10 && sudo ip route add ${var.cloud_vcn_cidr} $vti01_str $vti02_str; fi",
     ]
   }
 }
-
