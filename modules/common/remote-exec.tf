@@ -132,6 +132,7 @@ resource "null_resource" "provision" {
       "sudo systemctl start ipsec",
       "sudo ip route | grep ${var.cloud_vcn_cidr} &> /dev/null",
       "route_check=$?",
+      "if [ $route_check -ne 0 ]; then sleep 10; fi" ,
       "sudo ip link show | grep vti01",
       "vti01_check=$?",
       "if [ $vti01_check -eq 0 ]; then vti01_str='nexthop dev vti01'; else vti01_str=''; fi",
