@@ -2,10 +2,10 @@
 This repository contains following two examples.
 
 1. OCI(libreswan) <----> (OCI IPSec Connections) <-----> OCI
-![](ipsec_oci_oci.png)
+![](ipsec_vpn_oci_oci.png)
 
 2. AWS(libreswan) <----> (OCI IPSec Connections) <-----> OCI
-![](ipsec_oci_aws.png)
+![](ipsec_vpn_oci_aws.png)
 
 
 If you'd like to try them, you should go to bellow directories
