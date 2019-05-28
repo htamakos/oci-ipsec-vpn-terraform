@@ -38,7 +38,7 @@ resource "oci_core_instance" "pub_instance_with_drg" {
   create_vnic_details {
     subnet_id = "${oci_core_subnet.pub_subnet_with_drg.id}"
 
-    assign_public_ip = true 
+    assign_public_ip = true
     hostname_label   = "${var.env}-pub-instance"
     private_ip       = "${var.pub_instance_private_ip}"
   }
@@ -57,4 +57,3 @@ resource "oci_core_instance" "pub_instance_with_drg" {
 
   preserve_boot_volume = false
 }
-
